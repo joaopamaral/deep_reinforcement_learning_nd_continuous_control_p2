@@ -1,0 +1,20 @@
+Banana_Windows_x86_64*
+
+.vscode
+
+unity-environment.log
+
+Navigation_Pixels.ipynb
+
+checkpoint_2000_ep.pth
+checkpoint_blue.pth
+
+VisualBanana_Windows_x86_64*
+Reacher_Windows_x86_64*
+
+.idea
+
+.ipynb_checkpoints
+
+__pycache__
+/Distributed Distributional Deterministic Policy Gradients.pdf

@@ -9,7 +9,7 @@ from models.helper import hidden_init
 class Actor(nn.Module):
     """Actor (Policy) Model."""
 
-    def __init__(self, state_size, action_size, seed, fc1_units=400, fc2_units=300):
+    def __init__(self, state_size, action_size, seed, fc1_units=128, fc2_units=64, fc3_units=32):
         """Initialize parameters and build model.
         Params
         ======
@@ -25,7 +25,8 @@ class Actor(nn.Module):
         # self.bn1 = nn.BatchNorm1d(fc1_units)
         self.fc2 = nn.Linear(fc1_units, fc2_units)
         # self.bn2 = nn.BatchNorm1d(fc2_units)
-        self.fc3 = nn.Linear(fc2_units, action_size)
+        self.fc3 = nn.Linear(fc2_units, fc3_units)
+        self.fc4 = nn.Linear(fc3_units, action_size)
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -39,7 +40,8 @@ class Actor(nn.Module):
         # x = F.relu(self.bn2(self.fc2(x)))
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))
-        return F.tanh(self.fc3(x))
+        x = F.relu(self.fc3(x))
+        return F.tanh(self.fc4(x))
 
     def summary(self):
         summary(self, (self.input_size, ))

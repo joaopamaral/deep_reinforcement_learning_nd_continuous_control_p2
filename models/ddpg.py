@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 from models import Agent
 
 
-def ddpg(env: UnityEnvironment, n_episodes=200, max_t=1000, eps_start=1.0,
+def ddpg(env: UnityEnvironment, n_episodes=200, max_t=2000, eps_start=1.0,
          eps_end=0.01, eps_decay=0.995, seed=0, save_threshold=0.0):
     """
     Deep Deterministic Policy Gradients
@@ -49,16 +49,16 @@ def ddpg(env: UnityEnvironment, n_episodes=200, max_t=1000, eps_start=1.0,
         print(score_log(i_episode, scores_window, scores), end="")
         if i_episode % 100 == 0:
             if np.mean(scores_window) >= save_threshold:    # save if avg score is higher than the threshold
-                print(score_log(i_episode, scores_window) + '\tSaved!')
+                print(score_log(i_episode, scores_window, scores) + '\tSaved!')
                 agent.save()
                 # break
             else:
-                print(score_log(i_episode, scores_window))
+                print(score_log(i_episode, scores_window, scores))
 
     return all_scores, agent
 
 
-def run_single_episode(env: UnityEnvironment, brain_name, agent: Agent=None, max_t=1000, train_mode=False):
+def run_single_episode(env: UnityEnvironment, brain_name, agent: Agent=None, max_t=2000, train_mode=False):
     """
     Execute a single episode
 
@@ -88,8 +88,8 @@ def run_single_episode(env: UnityEnvironment, brain_name, agent: Agent=None, max
             actions = agent.act(states)
         else:
             actions = np.random.randn(num_agents, action_size)  # select an action (for each agent)
-        # actions = np.clip(actions, -1, 1)  # all actions between -1 and 1
-        env_info = env.step(actions if num_agents > 1 else actions[0])[brain_name]        # send the action to the environment
+        actions = np.clip(actions, -1, 1)  # all actions between -1 and 1
+        env_info = env.step(actions)[brain_name]        # send the action to the environment
 
         next_states = env_info.vector_observations   # get the next state
         rewards = env_info.rewards                   # get the reward
