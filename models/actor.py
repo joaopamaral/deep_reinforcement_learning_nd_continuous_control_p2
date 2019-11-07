@@ -9,7 +9,7 @@ from models.helper import hidden_init
 class Actor(nn.Module):
     """Actor (Policy) Model."""
 
-    def __init__(self, state_size, action_size, seed, fc1_units=128, fc2_units=64, fc3_units=32):
+    def __init__(self, state_size, action_size, seed, fc1_units=400, fc2_units=300):
         """Initialize parameters and build model.
         Params
         ======
@@ -20,13 +20,16 @@ class Actor(nn.Module):
             fc2_units (int): Number of nodes in second hidden layer
         """
         super(Actor, self).__init__()
+
+        self.input_size = state_size
         self.seed = torch.manual_seed(seed)
+
         self.fc1 = nn.Linear(state_size, fc1_units)
-        # self.bn1 = nn.BatchNorm1d(fc1_units)
+        self.bn1 = nn.BatchNorm1d(fc1_units)
         self.fc2 = nn.Linear(fc1_units, fc2_units)
-        # self.bn2 = nn.BatchNorm1d(fc2_units)
-        self.fc3 = nn.Linear(fc2_units, fc3_units)
-        self.fc4 = nn.Linear(fc3_units, action_size)
+        self.bn2 = nn.BatchNorm1d(fc2_units)
+        self.fc3 = nn.Linear(fc2_units, action_size)
+
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -36,12 +39,9 @@ class Actor(nn.Module):
 
     def forward(self, state):
         """Build an actor (policy) network that maps states -> actions."""
-        # x = F.relu(self.bn1(self.fc1(state)))
-        # x = F.relu(self.bn2(self.fc2(x)))
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        return F.tanh(self.fc4(x))
+        x = F.relu(self.bn1(self.fc1(state)))
+        x = F.relu(self.bn2(self.fc2(x)))
+        return torch.tanh(self.fc3(x))
 
     def summary(self):
         summary(self, (self.input_size, ))

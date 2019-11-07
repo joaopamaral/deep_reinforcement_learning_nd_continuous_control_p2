@@ -39,7 +39,8 @@ class Agent:
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
 
         # Noise process
-        self.noise = OUNoise(action_size, random_seed)
+        # self.noise = OUNoise(action_size, random_seed, mu=0.2, theta=0.4, sigma=0.1)
+        self.noise = OUNoise(action_size, random_seed, mu=0.2, theta=0.2, sigma=0.2)
 
         # Replay memory
         self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed, device)
@@ -50,12 +51,13 @@ class Agent:
         for state, action, reward, next_state, done in zip(states, actions, rewards, next_states, dones):
             self.memory.add(state, action, reward, next_state, done)
 
-        # Learn, if enough samples are available in memory
-        if len(self.memory) > BATCH_SIZE:
-            experiences = self.memory.sample()
-            self.learn(experiences, GAMMA)
+        # Learn, if enough samples are available in memory and every 20 steps
+        if len(self.memory) > BATCH_SIZE and time_step % 20 == 0:
+            for _ in range(10):
+                experiences = self.memory.sample()
+                self.learn(experiences, GAMMA)
 
-    def act(self, states, add_noise=True):
+    def act(self, states, epsilon=0.0, add_noise=True):
         """Returns actions for given state as per current policy."""
         states = torch.from_numpy(states).float().to(device)
         self.actor_local.eval()
@@ -63,7 +65,7 @@ class Agent:
             actions = self.actor_local(states).cpu().data.numpy()
         self.actor_local.train()
         if add_noise:
-            actions += self.noise.sample()
+            actions += self.noise.sample() * epsilon
 
         return np.clip(actions, -1, 1)
 

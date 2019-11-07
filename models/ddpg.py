@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 from models import Agent
 
 
-def ddpg(env: UnityEnvironment, n_episodes=200, max_t=2000, eps_start=1.0,
+def ddpg(env: UnityEnvironment, agent=None, n_episodes=200, max_t=2000, eps_start=1.0,
          eps_end=0.01, eps_decay=0.995, seed=0, save_threshold=0.0):
     """
     Deep Deterministic Policy Gradients
@@ -35,13 +35,16 @@ def ddpg(env: UnityEnvironment, n_episodes=200, max_t=2000, eps_start=1.0,
     state_size = len(env_info.vector_observations[0])
 
     # create the agent
-    agent = Agent(state_size=state_size, action_size=action_size, random_seed=seed)
+    if not agent:
+        agent = Agent(state_size=state_size, action_size=action_size, random_seed=seed)
+        agent.network_summary()
 
     all_scores = []                         # list containing scores from each episode
     scores_window = deque(maxlen=100)       # last 100 scores
     eps = eps_start                         # initialize epsilon
+    print('*** Starting Training ***')
     for i_episode in tqdm(range(1, n_episodes+1)):
-        scores = run_single_episode(env, brain_name, agent, max_t, train_mode=True)
+        scores = run_single_episode(env, brain_name, agent, max_t, train_mode=True, epsilon=eps)
         scores_window.append(scores)        # save most recent score
         all_scores.append(scores)           # save most recent score
         eps = max(eps_end, eps_decay*eps)   # decrease epsilon
@@ -58,7 +61,7 @@ def ddpg(env: UnityEnvironment, n_episodes=200, max_t=2000, eps_start=1.0,
     return all_scores, agent
 
 
-def run_single_episode(env: UnityEnvironment, brain_name, agent: Agent=None, max_t=2000, train_mode=False):
+def run_single_episode(env: UnityEnvironment, brain_name, agent: Agent=None, max_t=2000, train_mode=False, epsilon=0.0):
     """
     Execute a single episode
 
@@ -85,7 +88,7 @@ def run_single_episode(env: UnityEnvironment, brain_name, agent: Agent=None, max
 
     for time_step in range(max_t):  # Run each step in episode
         if agent:
-            actions = agent.act(states)
+            actions = agent.act(states, epsilon=epsilon, add_noise=train_mode)
         else:
             actions = np.random.randn(num_agents, action_size)  # select an action (for each agent)
         actions = np.clip(actions, -1, 1)  # all actions between -1 and 1
