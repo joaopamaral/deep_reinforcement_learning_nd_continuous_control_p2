@@ -109,6 +109,7 @@ So let's see what happen to the agent:
 | We started with a random agent  | After 182 episodes the double-jointed arm was pretty good on folling the target  |
 |---|---|
 | <img src="assets/random_single_agent.gif" width="400">  |  <img src="assets/trained_single_agent.gif" width="400"> |
+
 *The single-agent images above are just to make easy to understand the behavior of the environment and the trained agent. The agent was trained with the multi agent environment.*
 
 You can see the same trained agent executing a multi-agent simulation in the image below:
