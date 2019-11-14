@@ -2,7 +2,6 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from torchsummary import summary
-
 from models.helper import hidden_init
 
 
@@ -25,9 +24,8 @@ class Actor(nn.Module):
         self.seed = torch.manual_seed(seed)
 
         self.fc1 = nn.Linear(state_size, fc1_units)
-        self.bn1 = nn.BatchNorm1d(fc1_units)
+        self.bn1 = nn.BatchNorm1d(fc1_units)                  # BatchNorm to increase up the training
         self.fc2 = nn.Linear(fc1_units, fc2_units)
-        self.bn2 = nn.BatchNorm1d(fc2_units)
         self.fc3 = nn.Linear(fc2_units, action_size)
 
         self.reset_parameters()
@@ -40,8 +38,9 @@ class Actor(nn.Module):
     def forward(self, state):
         """Build an actor (policy) network that maps states -> actions."""
         x = F.relu(self.bn1(self.fc1(state)))
-        x = F.relu(self.bn2(self.fc2(x)))
+        x = F.relu(self.fc2(x))
         return torch.tanh(self.fc3(x))
 
     def summary(self):
+        """Print the network structure"""
         summary(self, (self.input_size, ))

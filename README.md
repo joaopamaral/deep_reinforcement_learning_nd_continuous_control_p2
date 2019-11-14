@@ -3,42 +3,39 @@
 [image1]: https://user-images.githubusercontent.com/10624937/43851024-320ba930-9aff-11e8-8493-ee547c6af349.gif "Trained Agent"
 [image2]: https://user-images.githubusercontent.com/10624937/43851646-d899bf20-9b00-11e8-858c-29b5c2c94ccc.png "Crawler"
 
+# Udacity Deep Reinforcement Learning Nanodegree
 
 # Project 2: Continuous Control
 
 ### Introduction
 
-For this project, you will work with the [Reacher](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#reacher) environment.
+For this project, an agent is trained to work with the [Reacher](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#reacher) environment.
 
 ![Trained Agent][image1]
 
-In this environment, a double-jointed arm can move to target locations. A reward of +0.1 is provided for each step that the agent's hand is in the goal location. Thus, the goal of your agent is to maintain its position at the target location for as many time steps as possible.
+In this environment, a double-jointed arm can move to target locations. A reward of **+0.1** is provided for each step that the agent's hand is in the goal location. Thus, the goal of your agent is to maintain its position at the target location for as many time steps as possible.
 
-The observation space consists of 33 variables corresponding to position, rotation, velocity, and angular velocities of the arm. Each action is a vector with four numbers, corresponding to torque applicable to two joints. Every entry in the action vector should be a number between -1 and 1.
+The observation space consists of **33 variables** corresponding to position, rotation, velocity, and angular velocities of the arm. Each action is a vector with **4 numbers**, corresponding to torque applicable to two joints. Every entry in the action vector should be a number between -1 and 1.
 
 ### Distributed Training
 
-For this project, we will provide you with two separate versions of the Unity environment:
+In this project, it's provide two separate versions of the Unity environment:
 - The first version contains a single agent.
 - The second version contains 20 identical agents, each with its own copy of the environment.  
 
-The second version is useful for algorithms like [PPO](https://arxiv.org/pdf/1707.06347.pdf), [A3C](https://arxiv.org/pdf/1602.01783.pdf), and [D4PG](https://openreview.net/pdf?id=SyZipzbCb) that use multiple (non-interacting, parallel) copies of the same agent to distribute the task of gathering experience.  
+For solve this project, I used **the second version** (20 agents) and a [DDPG](https://arxiv.org/pdf/1509.02971.pdf) algorithm for training.
+
+The trained agent could be used in both environments.
 
 ### Solving the Environment
 
-Note that your project submission need only solve one of the two versions of the environment. 
+To solve this environment with multiple agents, every agent must get an average score of +30 (over 100 consecutive episodes).  
 
-#### Option 1: Solve the First Version
-
-The task is episodic, and in order to solve the environment,  your agent must get an average score of +30 over 100 consecutive episodes.
-
-#### Option 2: Solve the Second Version
-
-The barrier for solving the second version of the environment is slightly different, to take into account the presence of many agents.  In particular, your agents must get an average score of +30 (over 100 consecutive episodes, and over all agents).  Specifically,
+Specifically,
 - After each episode, we add up the rewards that each agent received (without discounting), to get a score for each agent.  This yields 20 (potentially different) scores.  We then take the average of these 20 scores. 
 - This yields an **average score** for each episode (where the average is over all 20 agents).
 
-The environment is considered solved, when the average (over 100 episodes) of those average scores is at least +30. 
+The environment is considered solved, when the average (over 100 episodes) of those average scores is at least **+30**. 
 
 ### Getting Started
 
@@ -60,29 +57,60 @@ The environment is considered solved, when the average (over 100 episodes) of th
 
     (_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Linux_NoVis.zip) (version 1) or [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/Reacher_Linux_NoVis.zip) (version 2) to obtain the "headless" version of the environment.  You will **not** be able to watch the agent without enabling a virtual screen, but you will be able to train the agent.  (_To watch the agent, you should follow the instructions to [enable a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), and then download the environment for the **Linux** operating system above._)
 
-2. Place the file in the DRLND GitHub repository, in the `p2_continuous-control/` folder, and unzip (or decompress) the file. 
+2. Place the file in this folder, and unzip (or decompress) the file. 
+
+## Dependencies
+
+To set up your python environment to run the code in this repository, follow the instructions below.
+
+1. Create (and activate) a new environment with Python 3.6.
+
+	- __Linux__ or __Mac__: 
+	```bash
+	conda create --name drlnd python=3.6
+	source activate drlnd
+	```
+	- __Windows__: 
+	```bash
+	conda create --name drlnd python=3.6 
+	activate drlnd
+	```
+
+2. Install all dependencies from `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Install Pytorch version 0.4.0 with your correct Cuda version (in my case, I'm using cuda 10.0).
+
+```bash
+conda install -n drlnd pytorch=0.4.0 cudatoolkit=10.0 -c pytorch
+```
+
+4 - Create an IPython kernel for the drlnd environment.
+
+```bash
+python -m ipykernel install --user --name drlnd --display-name "drlnd"
+```
 
 ### Instructions
 
-Follow the instructions in `Continuous_Control.ipynb` to get started with training your own agent!  
+Follow the instructions in `Report.ipynb` to get started with training the agent!
 
-### (Optional) Challenge: Crawler Environment
+### Result
 
-After you have successfully completed the project, you might like to solve the more difficult **Crawler** environment.
+In episode 182 (and after 46:42 minutes using Udacity's Workspace GPU), the agent achieved the expected result 👍 (moving avg > 30).
 
-![Crawler][image2]
+![Result](assets/result_plot.png)
 
-In this continuous control environment, the goal is to teach a creature with four legs to walk forward without falling.  
+So let's see what happen to the agent:
 
-You can read more about this environment in the ML-Agents GitHub [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#crawler).  To solve this harder task, you'll need to download a new Unity environment.  (**Note**: Udacity students should not submit a project with this new environment.)
+| We started with a random agent  | After 182 episodes the double-jointed arm was pretty good on folling the target  |
+|---|---|
+| <img src="assets/random_single_agent.gif" width="400">  |  <img src="assets/trained_single_agent.gif" width="400"> |
+*The single-agent images above are just to make easy to understand the behavior of the environment and the trained agent. The agent was trained with the multi agent environment.*
 
-You need only select the environment that matches your operating system:
-- Linux: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Crawler/Crawler_Linux.zip)
-- Mac OSX: [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Crawler/Crawler.app.zip)
-- Windows (32-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Crawler/Crawler_Windows_x86.zip)
-- Windows (64-bit): [click here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Crawler/Crawler_Windows_x86_64.zip)
+You can see the same trained agent executing a multi-agent simulation in the image below:
 
-Then, place the file in the `p2_continuous-control/` folder in the DRLND GitHub repository, and unzip (or decompress) the file.  Next, open `Crawler.ipynb` and follow the instructions to learn how to use the Python API to control the agent.
-
-(_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Crawler/Crawler_Linux_NoVis.zip) to obtain the "headless" version of the environment.  You will **not** be able to watch the agent without enabling a virtual screen, but you will be able to train the agent.  (_To watch the agent, you should follow the instructions to [enable a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), and then download the environment for the **Linux** operating system above._)
-
+![Multi-Agent-Result](assets/trained_multiple_agent.gif)

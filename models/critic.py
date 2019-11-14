@@ -2,7 +2,6 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from torchsummary import summary
-
 from models.helper import hidden_init
 
 
@@ -22,9 +21,8 @@ class Critic(nn.Module):
         super(Critic, self).__init__()
         self.seed = torch.manual_seed(seed)
         self.fcs1 = nn.Linear(state_size, fcs1_units)
-        self.bn1 = nn.BatchNorm1d(fcs1_units)
+        self.bn1 = nn.BatchNorm1d(fcs1_units)                   # BatchNorm to increase up the training
         self.fc2 = nn.Linear(fcs1_units+action_size, fc2_units)
-        self.bn2 = nn.BatchNorm1d(fc2_units)
         self.fc3 = nn.Linear(fc2_units, 1)
         self.reset_parameters()
 
@@ -37,8 +35,9 @@ class Critic(nn.Module):
         """Build a critic (value) network that maps (state, action) pairs -> Q-values."""
         xs = F.relu(self.bn1(self.fcs1(state)))
         x = torch.cat((xs.float(), action.float()), dim=1)
-        x = F.relu(self.bn2(self.fc2(x)))
+        x = F.relu(self.fc2(x))
         return self.fc3(x)
 
     def summary(self):
+        """Print the network structure"""
         summary(self, (self.input_size, ))
