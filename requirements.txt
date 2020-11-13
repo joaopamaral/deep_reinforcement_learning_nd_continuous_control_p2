@@ -1,7 +1,7 @@
 torch==1.2.0
 unityagents
 gym
-tensorflow==1.7.1
+tensorflow==2.3.1
 Pillow>=4.2.1
 matplotlib
 numpy>=1.11.0
